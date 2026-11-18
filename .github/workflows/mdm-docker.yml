@@ -1,0 +1,22 @@
+name: Build MDM Docker Image
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 要构建的版本
+        default: v0.5.2
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.version }}
+      - name: Build image
+        run: docker build -t mdm:0.5.2 .
+      - name: Save image
+        run: docker save -o /tmp/mdm.tar mdm:0.5.2 && gzip /tmp/mdm.tar
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mdm-amd64-image
+          path: /tmp/mdm.tar.gz
